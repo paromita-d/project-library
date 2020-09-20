@@ -12,6 +12,9 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import static org.junit.Assert.*;
 import static org.library.service.MetaDataService.CHECKOUT_DURATION;
 
@@ -51,5 +54,17 @@ public class MetaDataServiceTest {
     @Test(expected = LibraryException.class)
     public void getCheckoutDurationInvalidTest() throws LibraryException {
         service.getCheckoutDuration();
+    }
+
+    @Test
+    public void getAllMetadataTest() throws LibraryException {
+        Collection<MetaData> actual = new ArrayList<>();
+        actual.add(MetaData.builder().metaKey("key-1").metaValue("val-1").build());
+        actual.add(MetaData.builder().metaKey("key-2").metaValue("val-2").build());
+        actual.add(MetaData.builder().metaKey("key-3").metaValue("val-3").build());
+        repository.saveAll(actual);
+
+        Collection<MetaData> expected = service.getAllMetadata();
+        assertEquals(expected, actual);
     }
 }

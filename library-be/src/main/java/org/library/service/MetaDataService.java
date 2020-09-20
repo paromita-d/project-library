@@ -6,7 +6,7 @@ import org.library.exception.LibraryException;
 import org.library.repository.MetaDataRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -41,5 +41,15 @@ public class MetaDataService {
             throw new LibraryException("Exception fetching checkout duration", e);
         }
         throw new LibraryException(CHECKOUT_DURATION + " not found in DB");
+    }
+
+    public Collection<MetaData> getAllMetadata() throws LibraryException {
+        try {
+            List<MetaData> list = new ArrayList<>();
+            repository.findAll().forEach(list::add);
+            return list;
+        } catch (Exception e) {
+            throw new LibraryException("Exception fetching metadata", e);
+        }
     }
 }
