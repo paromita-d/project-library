@@ -39,8 +39,8 @@ create table books_transactions
     id serial,
 	user_transaction_id int,
 	book_id int,
-	returned varchar,
-	overdue varchar,
+	returned bool,
+	overdue bool,
 	primary key(id),
 	constraint books_transactions_users_transactions_id_fk
 	    foreign key(user_transaction_id)
