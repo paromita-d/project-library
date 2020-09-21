@@ -20,36 +20,40 @@ public class MetaDataService {
         this.repository = repository;
     }
 
-    public void persistCheckoutDuration(int duration) throws LibraryException {
-        if(duration <= 0) {
-            throw new LibraryException("Duration should be positive. Found " + duration);
-        }
-        try {
-            MetaData metaData = repository.save(MetaData.builder().metaKey(CHECKOUT_DURATION).metaValue(String.valueOf(duration)).build());
-            log.info("persisted " + metaData);
-        } catch (Exception e) {
-            throw new LibraryException("Exception inserting checkout duration", e);
-        }
-    }
-
     public int getCheckoutDuration() throws LibraryException {
         try {
             Optional<MetaData> optional = repository.findById(CHECKOUT_DURATION);
             if(optional.isPresent())
                 return Integer.parseInt(optional.get().getMetaValue());
         } catch (Exception e) {
-            throw new LibraryException("Exception fetching checkout duration", e);
+            throw new LibraryException(e);
         }
         throw new LibraryException(CHECKOUT_DURATION + " not found in DB");
     }
 
-    public Collection<MetaData> getAllMetadata() throws LibraryException {
+    public void persistMetadata(Map<String, String> metaMap) throws LibraryException {
         try {
-            List<MetaData> list = new ArrayList<>();
-            repository.findAll().forEach(list::add);
-            return list;
+            if(metaMap.containsKey(CHECKOUT_DURATION) && Integer.parseInt(metaMap.get(CHECKOUT_DURATION)) <= 0) {
+                throw new LibraryException("Duration should be positive. Found " + metaMap.containsKey(CHECKOUT_DURATION));
+            }
+            List<MetaData> metaDataList = new ArrayList<>();
+            metaMap.forEach((k, v) -> metaDataList.add(MetaData.builder().metaKey(k).metaValue(v).build()));
+
+            repository.saveAll(metaDataList);
+            log.info("persisted " + metaDataList);
         } catch (Exception e) {
-            throw new LibraryException("Exception fetching metadata", e);
+            throw new LibraryException(e);
+        }
+    }
+
+    public Map<String, String> getAllMetadata() throws LibraryException {
+        try {
+            Map<String, String> metaMap = new LinkedHashMap<>();
+            repository.findAll().forEach(e -> metaMap.put(e.getMetaKey(), e.getMetaValue()));
+            log.info("fetched all metadata {}", metaMap);
+            return metaMap;
+        } catch (Exception e) {
+            throw new LibraryException(e);
         }
     }
 }

@@ -13,7 +13,9 @@ import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.library.service.MetaDataService.CHECKOUT_DURATION;
@@ -31,20 +33,31 @@ public class MetaDataServiceTest {
     private MetaDataRepository repository;
 
     @Test
-    public void persistCheckoutDurationTest() throws LibraryException {
-        service.persistCheckoutDuration(90);
+    public void testPersistCheckoutDuration() throws LibraryException {
+        Map<String, String> map = new HashMap<>();
+        map.put(CHECKOUT_DURATION, "90");
+        service.persistMetadata(map);
 
         MetaData actual = repository.findById(CHECKOUT_DURATION).get();
         assertEquals("90", actual.getMetaValue());
     }
 
     @Test(expected = LibraryException.class)
-    public void persistCheckoutDurationInvalidTest() throws LibraryException {
-        service.persistCheckoutDuration(-1);
+    public void testPersistCheckoutDurationInvalid() throws LibraryException {
+        Map<String, String> map = new HashMap<>();
+        map.put(CHECKOUT_DURATION, "-1");
+        service.persistMetadata(map);
+    }
+
+    @Test(expected = LibraryException.class)
+    public void testPersistCheckoutDurationNonInt() throws LibraryException {
+        Map<String, String> map = new HashMap<>();
+        map.put(CHECKOUT_DURATION, "abcd");
+        service.persistMetadata(map);
     }
 
     @Test
-    public void getCheckoutDurationTest() throws LibraryException {
+    public void testGetCheckoutDuration() throws LibraryException {
         repository.save(MetaData.builder().metaKey(CHECKOUT_DURATION).metaValue("45").build());
 
         int actual = service.getCheckoutDuration();
@@ -52,19 +65,21 @@ public class MetaDataServiceTest {
     }
 
     @Test(expected = LibraryException.class)
-    public void getCheckoutDurationInvalidTest() throws LibraryException {
+    public void testGetCheckoutDurationInvalid() throws LibraryException {
         service.getCheckoutDuration();
     }
 
     @Test
-    public void getAllMetadataTest() throws LibraryException {
-        Collection<MetaData> actual = new ArrayList<>();
+    public void testGetAllMetadata() throws LibraryException {
+        List<MetaData> actual = new ArrayList<>();
         actual.add(MetaData.builder().metaKey("key-1").metaValue("val-1").build());
         actual.add(MetaData.builder().metaKey("key-2").metaValue("val-2").build());
         actual.add(MetaData.builder().metaKey("key-3").metaValue("val-3").build());
         repository.saveAll(actual);
 
-        Collection<MetaData> expected = service.getAllMetadata();
-        assertEquals(expected, actual);
+        Map<String, String> expected = service.getAllMetadata();
+        assertEquals(expected.get("key-1"), actual.get(0).getMetaValue());
+        assertEquals(expected.get("key-2"), actual.get(1).getMetaValue());
+        assertEquals(expected.get("key-3"), actual.get(2).getMetaValue());
     }
 }

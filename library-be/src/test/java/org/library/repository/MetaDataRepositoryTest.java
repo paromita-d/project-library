@@ -20,7 +20,7 @@ public class MetaDataRepositoryTest {
     private TestEntityManager entityManager;
 
     @Test
-    public void saveWorks() {
+    public void testSave() {
         MetaData expected = MetaData.builder().metaKey("key-1").metaValue("value-1").build();
         repository.save(expected);
 
@@ -29,7 +29,7 @@ public class MetaDataRepositoryTest {
     }
 
     @Test
-    public void updateWorks() {
+    public void testUpdate() {
         MetaData metadata = MetaData.builder().metaKey("key-1").metaValue("value-1").build();
         entityManager.persist(metadata);
 
@@ -41,7 +41,7 @@ public class MetaDataRepositoryTest {
     }
 
     @Test
-    public void getWorks() {
+    public void testGet() {
         MetaData actual = MetaData.builder().metaKey("key-2").metaValue("value-2").build();
         entityManager.persist(actual);
 
