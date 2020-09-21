@@ -34,7 +34,7 @@ public class MetaDataService {
     public void persistMetadata(Map<String, String> metaMap) throws LibraryException {
         try {
             if(metaMap.containsKey(CHECKOUT_DURATION) && Integer.parseInt(metaMap.get(CHECKOUT_DURATION)) <= 0) {
-                throw new LibraryException("Duration should be positive. Found " + metaMap.containsKey(CHECKOUT_DURATION));
+                throw new LibraryException("Duration should be positive. Found " + metaMap.get(CHECKOUT_DURATION));
             }
             List<MetaData> metaDataList = new ArrayList<>();
             metaMap.forEach((k, v) -> metaDataList.add(MetaData.builder().metaKey(k).metaValue(v).build()));
