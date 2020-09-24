@@ -8,7 +8,10 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 
 @Entity @Table(name = "metadata")
-@Data @Builder @NoArgsConstructor @AllArgsConstructor
+@Data // equivalent to getter/setter/equalsTo/hashCode
+@Builder // design pattern to instantiate an object (here its used in the test cases)
+@NoArgsConstructor // for DB serialize/deserialize
+@AllArgsConstructor
 public class MetaData {
 
     @Id

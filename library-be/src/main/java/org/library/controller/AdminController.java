@@ -14,6 +14,18 @@ public class AdminController {
 
     private MetaDataService metaDataService;
 
+    /*
+    * @Autowired is used to inject the object. If we want to create an instance of class A and inject and object of class B.
+    Eg:
+    @Autowired
+    private MetaDataService metaDataService;
+    // and there would have been no constructor as below
+
+    * Instead of @Autowired, in the constructor of A pass an instance of B
+    * As shown below
+    * */
+
+
     public AdminController(MetaDataService metaDataService) {
         this.metaDataService = metaDataService;
     }
