@@ -1,15 +1,16 @@
 package org.library.controller;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.library.exception.LibraryException;
 import org.library.service.MetaDataService;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
+@RequestMapping("/admin")
+@Api("endpoints for library admin")
 public class AdminController {
 
     private MetaDataService metaDataService;
@@ -31,11 +32,13 @@ public class AdminController {
     }
 
     @GetMapping("/metadata")
+    @ApiOperation(value = "fetches all metadata", response = Map.class)
     public Map<String, String> getAllMetaData() throws LibraryException {
         return metaDataService.getAllMetadata();
     }
 
     @PostMapping("/metadata")
+    @ApiOperation(value = "updates the metadata passed (if key already exists, else inserts)", response = String.class)
     public String persistMetaData(@RequestBody Map<String, String> map) throws LibraryException {
         metaDataService.persistMetadata(map);
         return ("[]");

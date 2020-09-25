@@ -2,6 +2,7 @@ package org.library.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.spi.DocumentationType;
@@ -18,6 +19,10 @@ public class LibraryConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("org.library.controller"))
                 .paths(PathSelectors.any())
-                .build();
+                .build()
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Project Library REST API")
+                        .description("Library API for Admin and Customer")
+                        .build());
     }
 }
