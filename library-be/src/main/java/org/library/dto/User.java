@@ -1,12 +1,22 @@
 package org.library.dto;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@Data @Builder
+import javax.persistence.*;
+@Entity @Table(name = "users")
+@Data @Builder @NoArgsConstructor
+@AllArgsConstructor
 public class User {
-    private Integer id;
+    @Id @GeneratedValue(strategy = GenerationType.TABLE)
+    private Long id;
+
+    @Column(name = "user_name")
     private String userName;
+    @Column(name = "user_type")
     private String userType;
-    private String pwd;
+    @Column(name = "pwd")
+    private String password;
 }
