@@ -2,7 +2,7 @@ package org.library.repository;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.library.dto.MetaData;
+import org.library.repository.dto.MetaData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;

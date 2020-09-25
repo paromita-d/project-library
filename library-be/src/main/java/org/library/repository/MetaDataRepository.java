@@ -1,6 +1,6 @@
 package org.library.repository;
 
-import org.library.dto.MetaData;
+import org.library.repository.dto.MetaData;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

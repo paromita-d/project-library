@@ -1,7 +1,7 @@
 package org.library.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.library.dto.MetaData;
+import org.library.repository.dto.MetaData;
 import org.library.exception.LibraryException;
 import org.library.repository.MetaDataRepository;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package org.library.repository;
 
-import org.library.dto.BookTransaction;
+import org.library.repository.dto.BookTransaction;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

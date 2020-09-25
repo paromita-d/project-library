@@ -2,10 +2,14 @@ package org.library.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.library.dto.BookDTO;
+import org.library.dto.UserDTO;
 import org.library.exception.LibraryException;
 import org.library.service.MetaDataService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,15 +36,34 @@ public class AdminController {
     }
 
     @GetMapping("/metadata")
-    @ApiOperation(value = "fetches all metadata", response = Map.class)
+    @ApiOperation("fetches all metadata")
     public Map<String, String> getAllMetaData() throws LibraryException {
         return metaDataService.getAllMetadata();
     }
 
     @PostMapping("/metadata")
-    @ApiOperation(value = "updates the metadata passed (if key already exists, else inserts)", response = String.class)
+    @ApiOperation("updates the metadata passed (if key already exists, else inserts). Returns [] on success")
     public String persistMetaData(@RequestBody Map<String, String> map) throws LibraryException {
         metaDataService.persistMetadata(map);
         return ("[]");
     }
+
+    @GetMapping("/overdue")
+    @ApiOperation("fetches those users who are overdue")
+    public List<UserDTO> getOverdue() {
+        return Arrays.asList(UserDTO.builder().id(10L).userName("Apple").build(), UserDTO.builder().id(20L).userName("Windows").build());
+    }
+
+    @PostMapping("/book")
+    @ApiOperation("add a new book to the library and return book id")
+    public Long persistBook(@RequestBody BookDTO bookDTO) {
+        return 10L;
+    }
+
+    @PutMapping("/book")
+    @ApiOperation("update the quantity of books in inventory. Setting to 0 means removing these books. Count can not be negative. Returns [] on success")
+    public String updateBooksQty(@RequestBody List<BookDTO> booksDTO) {
+        return ("[]");
+    }
+
 }

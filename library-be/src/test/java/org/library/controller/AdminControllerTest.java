@@ -48,7 +48,7 @@ public class AdminControllerTest {
 
     @Test
     public void testGetAllMetaData() throws Exception {
-        mvc.perform(get("/metadata")
+        mvc.perform(get("/admin/metadata")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{\"key-1\":\"val-1\",\"key-2\":\"val-2\",\"key-3\":\"val-3\"}"))
@@ -59,7 +59,7 @@ public class AdminControllerTest {
 
     @Test
     public void testPersistMetaData() throws Exception {
-        mvc.perform(post("/metadata")
+        mvc.perform(post("/admin/metadata")
                 .content(new ObjectMapper().writeValueAsString(metaData))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -70,7 +70,7 @@ public class AdminControllerTest {
     public void testGetAllMetaDataError() throws Exception {
         given(service.getAllMetadata()).willThrow(new LibraryException("No metadata found"));
 
-        mvc.perform(get("/metadata")
+        mvc.perform(get("/admin/metadata")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.errorBody", is("No metadata found")))
@@ -81,7 +81,7 @@ public class AdminControllerTest {
     public void testPersistMetaDataError() throws Exception {
         doThrow(new LibraryException("Failed persistence")).when(service).persistMetadata(isNotNull());
 
-        mvc.perform(post("/metadata", metaData)
+        mvc.perform(post("/admin/metadata", metaData)
                 .content(new ObjectMapper().writeValueAsString(metaData))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())

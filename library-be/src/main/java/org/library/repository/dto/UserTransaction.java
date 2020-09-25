@@ -1,4 +1,4 @@
-package org.library.dto;
+package org.library.repository.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
