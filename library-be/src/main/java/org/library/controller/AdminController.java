@@ -2,8 +2,8 @@ package org.library.controller;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.library.dto.BookDTO;
-import org.library.dto.UserDTO;
+import org.library.controller.dto.BookDTO;
+import org.library.controller.dto.UserDTO;
 import org.library.exception.LibraryException;
 import org.library.service.MetaDataService;
 import org.springframework.web.bind.annotation.*;
