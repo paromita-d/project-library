@@ -51,18 +51,21 @@ public class AdminController {
     @GetMapping("/overdue")
     @ApiOperation("fetches those users who are overdue")
     public List<UserDTO> getOverdue() {
+        //todo add logic
         return Arrays.asList(UserDTO.builder().id(10L).userName("Apple").build(), UserDTO.builder().id(20L).userName("Windows").build());
     }
 
     @PostMapping("/book")
     @ApiOperation("add a new book to the library and return book id")
     public Long persistBook(@RequestBody BookDTO bookDTO) {
+        //todo add logic
         return 10L;
     }
 
     @PutMapping("/book")
     @ApiOperation("update the quantity of books in inventory. Setting to 0 means removing these books. Count can not be negative. Returns [] on success")
     public String updateBooksQty(@RequestBody List<BookDTO> booksDTO) {
+        //todo add logic
         return ("[]");
     }
 
