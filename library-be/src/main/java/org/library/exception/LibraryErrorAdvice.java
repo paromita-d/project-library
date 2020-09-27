@@ -1,13 +1,11 @@
 package org.library.exception;
 
 import lombok.extern.slf4j.Slf4j;
+import org.library.controller.dto.StatusDTO;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
@@ -16,21 +14,23 @@ import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 public class LibraryErrorAdvice {
 
     @ExceptionHandler({RuntimeException.class})
-    public ResponseEntity<Map<String, String>> handleRunTimeException(RuntimeException e) {
+    public ResponseEntity<StatusDTO> handleRunTimeException(RuntimeException e) {
         return generateError(e);
     }
 
     @ExceptionHandler({LibraryException.class})
-    public ResponseEntity<Map<String, String>> handleLibraryException(LibraryException e) {
+    public ResponseEntity<StatusDTO> handleLibraryException(LibraryException e) {
         return generateError(e);
     }
 
-    private ResponseEntity<Map<String, String>> generateError(Exception e) {
+    private ResponseEntity<StatusDTO> generateError(Exception e) {
         log.error("Exception: ", e);
-        Map<String, String> errorMap = new LinkedHashMap<>();
-        errorMap.put("errorBody", e.getMessage());
-        errorMap.put("httpStatus", INTERNAL_SERVER_ERROR.getReasonPhrase());
 
-        return ResponseEntity.status(INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(errorMap);
+        StatusDTO statusDTO = StatusDTO.builder().
+                status(INTERNAL_SERVER_ERROR.getReasonPhrase()).
+                message(e.getMessage()).
+                build();
+
+        return ResponseEntity.status(INTERNAL_SERVER_ERROR).contentType(MediaType.APPLICATION_JSON).body(statusDTO);
     }
 }
