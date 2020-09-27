@@ -63,7 +63,7 @@ public class AdminControllerTest {
                 .content(new ObjectMapper().writeValueAsString(metaData))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().json("[]"));
+                .andExpect(content().json("{}"));
     }
 
     @Test
@@ -73,8 +73,8 @@ public class AdminControllerTest {
         mvc.perform(get("/admin/metadata")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.errorBody", is("No metadata found")))
-                .andExpect(jsonPath("$.httpStatus", is("Internal Server Error")));
+                .andExpect(jsonPath("$.message", is("No metadata found")))
+                .andExpect(jsonPath("$.status", is("Internal Server Error")));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class AdminControllerTest {
                 .content(new ObjectMapper().writeValueAsString(metaData))
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isInternalServerError())
-                .andExpect(jsonPath("$.errorBody", is("Failed persistence")))
-                .andExpect(jsonPath("$.httpStatus", is("Internal Server Error")));
+                .andExpect(jsonPath("$.message", is("Failed persistence")))
+                .andExpect(jsonPath("$.status", is("Internal Server Error")));
     }
 }

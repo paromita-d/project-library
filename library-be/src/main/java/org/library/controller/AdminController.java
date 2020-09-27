@@ -3,6 +3,7 @@ package org.library.controller;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.library.controller.dto.BookDTO;
+import org.library.controller.dto.StatusDTO;
 import org.library.controller.dto.UserDTO;
 import org.library.exception.LibraryException;
 import org.library.service.MetaDataService;
@@ -43,9 +44,9 @@ public class AdminController {
 
     @PostMapping("/metadata")
     @ApiOperation("updates the metadata passed (if key already exists, else inserts). Returns [] on success")
-    public String persistMetaData(@RequestBody Map<String, String> map) throws LibraryException {
+    public StatusDTO persistMetaData(@RequestBody Map<String, String> map) throws LibraryException {
         metaDataService.persistMetadata(map);
-        return ("[]");
+        return StatusDTO.builder().message("metadata updated").build();
     }
 
     @GetMapping("/overdue")
@@ -57,16 +58,16 @@ public class AdminController {
 
     @PostMapping("/book")
     @ApiOperation("add a new book to the library and return book id")
-    public Long persistBook(@RequestBody BookDTO bookDTO) {
+    public StatusDTO persistBook(@RequestBody BookDTO bookDTO) {
         //todo add logic
-        return 10L;
+        return StatusDTO.builder().message("persisted to bookId - 10").build();
     }
 
     @PutMapping("/book")
     @ApiOperation("update the quantity of books in inventory. Setting to 0 means removing these books. Count can not be negative. Returns [] on success")
-    public String updateBooksQty(@RequestBody List<BookDTO> booksDTO) {
+    public StatusDTO updateBooksQty(@RequestBody List<BookDTO> booksDTO) {
         //todo add logic
-        return ("[]");
+        return StatusDTO.builder().message("updated book quantity").build();
     }
 
 }
