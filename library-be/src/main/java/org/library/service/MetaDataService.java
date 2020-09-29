@@ -31,9 +31,9 @@ public class MetaDataService {
             if(optional.isPresent())
                 return Integer.parseInt(optional.get().getMetaValue());
         } catch (Exception e) {
-            throw new LibraryException(e, INTERNAL_SERVER_ERROR);
+            throw new LibraryException(e);
         }
-        throw new LibraryException(CHECKOUT_DURATION + " not found in DB", INTERNAL_SERVER_ERROR);
+        throw new LibraryException(CHECKOUT_DURATION + " not found in DB");
     }
 
     // to save in the DB - map to list
@@ -61,7 +61,7 @@ public class MetaDataService {
             log.info("fetched all metadata {}", metaMap);
             return metaMap;
         } catch (Exception e) {
-            throw new LibraryException(e, INTERNAL_SERVER_ERROR);
+            throw new LibraryException(e);
         }
     }
 }
