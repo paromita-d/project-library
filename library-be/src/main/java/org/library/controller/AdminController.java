@@ -18,7 +18,7 @@ import java.util.Map;
 @Api("endpoints for library admin")
 public class AdminController {
 
-    private MetaDataService metaDataService;
+    private final MetaDataService metaDataService;
 
     /*
     * @Autowired is used to inject the object. If we want to create an instance of class A and inject and object of class B.
