@@ -49,7 +49,7 @@ public class MetaDataService {
             repository.saveAll(metaDataList);
             log.info("persisted " + metaDataList);
         } catch (Exception e) {
-            throw new LibraryException(e, INTERNAL_SERVER_ERROR);
+            throw new LibraryException(e);
         }
     }
 
