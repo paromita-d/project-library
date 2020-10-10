@@ -26,13 +26,10 @@ public class MetaDataService {
 
     // to handle the exception
     public int getCheckoutDuration() throws LibraryException {
-        try {
-            Optional<MetaData> optional = repository.findById(CHECKOUT_DURATION);
-            if(optional.isPresent())
-                return Integer.parseInt(optional.get().getMetaValue());
-        } catch (Exception e) {
-            throw new LibraryException(e);
-        }
+        Optional<MetaData> optional = repository.findById(CHECKOUT_DURATION);
+        if(optional.isPresent())
+            return Integer.parseInt(optional.get().getMetaValue());
+
         throw new LibraryException(CHECKOUT_DURATION + " not found in DB");
     }
 
@@ -42,26 +39,18 @@ public class MetaDataService {
             throw new LibraryException("Duration should be positive. Found " + metaMap.get(CHECKOUT_DURATION), REQUESTED_RANGE_NOT_SATISFIABLE);
         }
 
-        try {
-            List<MetaData> metaDataList = new ArrayList<>();
-            metaMap.forEach((k, v) -> metaDataList.add(MetaData.builder().metaKey(k).metaValue(v).build()));
+        List<MetaData> metaDataList = new ArrayList<>();
+        metaMap.forEach((k, v) -> metaDataList.add(MetaData.builder().metaKey(k).metaValue(v).build()));
 
-            repository.saveAll(metaDataList);
-            log.info("persisted " + metaDataList);
-        } catch (Exception e) {
-            throw new LibraryException(e);
-        }
+        repository.saveAll(metaDataList);
+        log.info("persisted " + metaDataList);
     }
 
     // to retrieve from DB - list to map
-    public Map<String, String> getAllMetadata() throws LibraryException {
-        try {
-            Map<String, String> metaMap = new LinkedHashMap<>();
-            repository.findAll().forEach(e -> metaMap.put(e.getMetaKey(), e.getMetaValue()));
-            log.info("fetched all metadata {}", metaMap);
-            return metaMap;
-        } catch (Exception e) {
-            throw new LibraryException(e);
-        }
+    public Map<String, String> getAllMetadata() {
+        Map<String, String> metaMap = new LinkedHashMap<>();
+        repository.findAll().forEach(e -> metaMap.put(e.getMetaKey(), e.getMetaValue()));
+        log.info("fetched all metadata {}", metaMap);
+        return metaMap;
     }
 }

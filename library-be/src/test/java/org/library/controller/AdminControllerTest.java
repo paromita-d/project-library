@@ -68,7 +68,7 @@ public class AdminControllerTest {
 
     @Test
     public void testGetAllMetaDataError() throws Exception {
-        given(service.getAllMetadata()).willThrow(new LibraryException("No metadata found"));
+        given(service.getAllMetadata()).willThrow(new RuntimeException("No metadata found"));
 
         mvc.perform(get("/admin/metadata")
                 .contentType(MediaType.APPLICATION_JSON))
