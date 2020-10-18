@@ -49,7 +49,7 @@ public class MetaDataServiceTest {
         service.persistMetadata(map);
     }
 
-    @Test(expected = LibraryException.class)
+    @Test(expected = RuntimeException.class)
     public void testPersistCheckoutDurationNonInt() throws LibraryException {
         Map<String, String> map = new HashMap<>();
         map.put(CHECKOUT_DURATION, "abcd");
