@@ -1,5 +1,5 @@
 # project-library
-This repo is the back end Spring Boot application that will expose the REST endpoints for Library management.
+[This repo](https://github.com/paromita-d/project-library.git) is the back end Spring Boot application that will expose the REST endpoints for Library management.
 This exposes endpoints for admin and customer via a Spring boot application, connecting to Postgres DB.
 The Front end will be a different application connecting to this BE.
 
