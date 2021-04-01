@@ -3,6 +3,9 @@ package org.library.service;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.library.controller.dto.BookDTO;
+import org.library.repository.BookRepository;
+import org.library.repository.dto.Book;
 import org.library.repository.dto.MetaData;
 import org.library.exception.LibraryException;
 import org.library.repository.MetaDataRepository;
@@ -12,10 +15,7 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.library.controller.dto.MetaDataEnum.CHECKOUT_DURATION;
@@ -31,6 +31,8 @@ public class AdminServiceTest {
     private AdminService service;
     @Autowired
     private MetaDataRepository metaDataRepository;
+    @Autowired
+    private BookRepository bookRepository;
 
     @Test
     public void testPersistCheckoutDuration() throws LibraryException {
@@ -81,5 +83,80 @@ public class AdminServiceTest {
         assertEquals(expected.get("key-1"), actual.get(0).getMetaValue());
         assertEquals(expected.get("key-2"), actual.get(1).getMetaValue());
         assertEquals(expected.get("key-3"), actual.get(2).getMetaValue());
+    }
+
+    @Test
+    public void testAddBookToRepo() throws LibraryException {
+        BookDTO bookDTO = BookDTO.builder().bookName("Alice in Wonderland").author("Rudyard Kipling").
+                description("Young Adults").quantity(120).availability(120).build();
+
+        Long id = service.addBookToRepo(bookDTO);
+
+        Book actual = bookRepository.findById(id).get();
+
+        assertEquals(bookDTO.getBookName(), actual.getBookName());
+        assertEquals(bookDTO.getAuthor(), actual.getAuthor());
+        assertEquals(bookDTO.getDescription(), actual.getDescription());
+        assertEquals(bookDTO.getQuantity(), actual.getQuantity());
+        assertEquals(bookDTO.getAvailability(), actual.getAvailability());
+    }
+
+    @Test(expected = LibraryException.class)
+    public void testAddBookToRepoInvalid() throws LibraryException {
+        service.addBookToRepo(BookDTO.builder().quantity(20).availability(100).build());
+    }
+
+    @Test
+    public void testUpdateBooksQtyInRepo() throws LibraryException {
+        BookDTO book1 = BookDTO.builder().bookName("Alice in Wonderland").author("Rudyard Kipling").
+                description("Young Adults").quantity(120).availability(120).build();
+        BookDTO book2 = BookDTO.builder().bookName("Scandal in Bohemia").author("Sir Arthur Conan Doyle").
+                description("Sherlock Holmes").quantity(50).availability(50).build();
+
+        book1.setId(service.addBookToRepo(book1));
+        book1.setQuantity(200);
+        book2.setId(service.addBookToRepo(book2));
+        book2.setQuantity(100);
+
+        List<BookDTO> books = Arrays.asList(book1, book2);
+        Map<Long, Integer> idQtyMap = service.updateBooksQtyInRepo(books);
+
+        assertEquals(2, idQtyMap.size());
+        assertEquals(idQtyMap.get(book1.getId()), book1.getQuantity());
+        assertEquals(idQtyMap.get(book2.getId()), book2.getQuantity());
+    }
+
+    @Test
+    public void testUpdateBooksQtyInRepoInvalidQty() throws LibraryException {
+        BookDTO book1 = BookDTO.builder().bookName("Alice in Wonderland").author("Rudyard Kipling").
+                description("Young Adults").quantity(120).availability(120).build();
+        BookDTO book2 = BookDTO.builder().bookName("Scandal in Bohemia").author("Sir Arthur Conan Doyle").
+                description("Sherlock Holmes").quantity(50).availability(50).build();
+
+        book1.setId(service.addBookToRepo(book1));
+        book1.setQuantity(-10);
+        book2.setId(service.addBookToRepo(book2));
+        book2.setQuantity(100);
+
+        List<BookDTO> books = Arrays.asList(book1, book2);
+        Map<Long, Integer> idQtyMap = service.updateBooksQtyInRepo(books);
+
+        assertEquals(1, idQtyMap.size());
+        assertFalse(idQtyMap.containsKey(book1.getId()));
+        assertEquals(idQtyMap.get(book2.getId()), book2.getQuantity());
+    }
+
+    @Test(expected = LibraryException.class)
+    public void testUpdateBooksQtyInRepoInvalidIds() throws LibraryException {
+        BookDTO book1 = BookDTO.builder().bookName("Alice in Wonderland").author("Rudyard Kipling").
+                description("Young Adults").quantity(120).availability(120).build();
+        BookDTO book2 = BookDTO.builder().bookName("Scandal in Bohemia").author("Sir Arthur Conan Doyle").
+                description("Sherlock Holmes").quantity(50).availability(50).build();
+
+        book1.setId(service.addBookToRepo(book1) + 1);
+        book1.setQuantity(-10);
+
+        List<BookDTO> books = Arrays.asList(book1, book2);
+        service.updateBooksQtyInRepo(books);
     }
 }

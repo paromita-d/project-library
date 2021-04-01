@@ -31,7 +31,7 @@ public class AdminControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private AdminService service;
+    private AdminService adminService;
 
     private Map<String, String> metaData = new LinkedHashMap<>();
 
@@ -42,8 +42,8 @@ public class AdminControllerTest {
         metaData.put("key-2", "val-2");
         metaData.put("key-3", "val-3");
 
-        given(service.getAllMetadata()).willReturn(metaData);
-        doNothing().when(service).persistMetadata(isNotNull());
+        given(adminService.getAllMetadata()).willReturn(metaData);
+        doNothing().when(adminService).persistMetadata(isNotNull());
     }
 
     @Test
@@ -68,7 +68,7 @@ public class AdminControllerTest {
 
     @Test
     public void testGetAllMetaDataError() throws Exception {
-        given(service.getAllMetadata()).willThrow(new RuntimeException("No metadata found"));
+        given(adminService.getAllMetadata()).willThrow(new RuntimeException("No metadata found"));
 
         mvc.perform(get("/admin/metadata")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -79,7 +79,7 @@ public class AdminControllerTest {
 
     @Test
     public void testPersistMetaDataError() throws Exception {
-        doThrow(new LibraryException("Failed persistence")).when(service).persistMetadata(isNotNull());
+        doThrow(new LibraryException("Failed persistence")).when(adminService).persistMetadata(isNotNull());
 
         mvc.perform(post("/admin/metadata", metaData)
                 .content(new ObjectMapper().writeValueAsString(metaData))
