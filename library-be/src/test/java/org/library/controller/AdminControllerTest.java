@@ -5,7 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.library.exception.LibraryException;
-import org.library.service.MetaDataService;
+import org.library.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -31,7 +31,7 @@ public class AdminControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private MetaDataService service;
+    private AdminService service;
 
     private Map<String, String> metaData = new LinkedHashMap<>();
 

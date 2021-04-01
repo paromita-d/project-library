@@ -6,7 +6,7 @@ import org.library.controller.dto.BookDTO;
 import org.library.controller.dto.StatusDTO;
 import org.library.controller.dto.UserDTO;
 import org.library.exception.LibraryException;
-import org.library.service.MetaDataService;
+import org.library.service.AdminService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -18,34 +18,32 @@ import java.util.Map;
 @Api("endpoints for library admin")
 public class AdminController {
 
-    private final MetaDataService metaDataService;
+    private final AdminService adminService;
 
     /*
     * @Autowired is used to inject the object. If we want to create an instance of class A and inject and object of class B.
     Eg:
     @Autowired
-    private MetaDataService metaDataService;
+    private AdminService adminService;
     // and there would have been no constructor as below
 
     * Instead of @Autowired, in the constructor of A pass an instance of B
     * As shown below
     * */
-
-
-    public AdminController(MetaDataService metaDataService) {
-        this.metaDataService = metaDataService;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
     }
 
     @GetMapping("/metadata")
     @ApiOperation("fetches all metadata")
-    public Map<String, String> getAllMetaData() throws LibraryException {
-        return metaDataService.getAllMetadata();
+    public Map<String, String> getAllMetaData() {
+        return adminService.getAllMetadata();
     }
 
     @PostMapping("/metadata")
     @ApiOperation("updates the metadata passed (if key already exists, else inserts). Returns [] on success")
     public StatusDTO persistMetaData(@RequestBody Map<String, String> map) throws LibraryException {
-        metaDataService.persistMetadata(map);
+        adminService.persistMetadata(map);
         return StatusDTO.builder().message("metadata updated").build();
     }
 
