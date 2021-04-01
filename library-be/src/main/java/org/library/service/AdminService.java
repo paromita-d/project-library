@@ -8,25 +8,25 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 
+import static org.library.controller.dto.MetaDataEnum.CHECKOUT_DURATION;
 import static org.springframework.http.HttpStatus.*;
 
 @Service
 @Slf4j
-public class MetaDataService {
+public class AdminService {
 
-    public static final String CHECKOUT_DURATION = "checkout_duration";
     // below line is equivalent to slf4j lombok annotation
     //private static final Logger log = org.slf4j.LoggerFactory.getLogger(MetaDataService.class);
 
-    private final MetaDataRepository repository;
+    private final MetaDataRepository metaDataRepository;
     // The constructor is equivalent to @Autowired. As we mention the service from the controller class, we mention the repository from service class
-    public MetaDataService(MetaDataRepository repository) {
-        this.repository = repository;
+    public AdminService(MetaDataRepository metaDataRepository) {
+        this.metaDataRepository = metaDataRepository;
     }
 
     // to handle the exception
     public int getCheckoutDuration() throws LibraryException {
-        Optional<MetaData> optional = repository.findById(CHECKOUT_DURATION);
+        Optional<MetaData> optional = metaDataRepository.findById(CHECKOUT_DURATION.getMetaKey());
         if(optional.isPresent())
             return Integer.parseInt(optional.get().getMetaValue());
 
@@ -35,21 +35,22 @@ public class MetaDataService {
 
     // to save in the DB - map to list
     public void persistMetadata(Map<String, String> metaMap) throws LibraryException {
-        if(metaMap.containsKey(CHECKOUT_DURATION) && Integer.parseInt(metaMap.get(CHECKOUT_DURATION)) <= 0) {
-            throw new LibraryException("Duration should be positive. Found " + metaMap.get(CHECKOUT_DURATION), REQUESTED_RANGE_NOT_SATISFIABLE);
+        String duration = metaMap.get(CHECKOUT_DURATION.getMetaKey());
+        if(duration != null && Integer.parseInt(duration) <= 0) {
+            throw new LibraryException("Duration should be positive. Found " + duration, REQUESTED_RANGE_NOT_SATISFIABLE);
         }
 
         List<MetaData> metaDataList = new ArrayList<>();
         metaMap.forEach((k, v) -> metaDataList.add(MetaData.builder().metaKey(k).metaValue(v).build()));
 
-        repository.saveAll(metaDataList);
+        metaDataRepository.saveAll(metaDataList);
         log.info("persisted " + metaDataList);
     }
 
     // to retrieve from DB - list to map
     public Map<String, String> getAllMetadata() {
         Map<String, String> metaMap = new LinkedHashMap<>();
-        repository.findAll().forEach(e -> metaMap.put(e.getMetaKey(), e.getMetaValue()));
+        metaDataRepository.findAll().forEach(e -> metaMap.put(e.getMetaKey(), e.getMetaValue()));
         log.info("fetched all metadata {}", metaMap);
         return metaMap;
     }
