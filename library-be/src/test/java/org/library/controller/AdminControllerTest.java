@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.library.controller.dto.BookDTO;
+import org.library.controller.dto.UserDTO;
 import org.library.exception.LibraryException;
 import org.library.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,14 +15,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.isNotNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 
@@ -31,9 +31,11 @@ public class AdminControllerTest {
     private MockMvc mvc;
 
     @MockBean
-    private AdminService service;
+    private AdminService adminService;
 
     private Map<String, String> metaData = new LinkedHashMap<>();
+    private BookDTO book1;
+    private BookDTO book2;
 
     @Before
     public void setup() throws LibraryException {
@@ -42,8 +44,19 @@ public class AdminControllerTest {
         metaData.put("key-2", "val-2");
         metaData.put("key-3", "val-3");
 
-        given(service.getAllMetadata()).willReturn(metaData);
-        doNothing().when(service).persistMetadata(isNotNull());
+        book1 = BookDTO.builder().id(10L).bookName("Alice in Wonderland").author("Rudyard Kipling").
+                description("Young Adults").quantity(120).availability(120).build();
+        book2 = BookDTO.builder().id(20L).bookName("Scandal in Bohemia").author("Sir Arthur Conan Doyle").
+                description("Sherlock Holmes").quantity(50).availability(50).build();
+
+        given(adminService.getAllMetadata()).willReturn(metaData);
+        doNothing().when(adminService).persistMetadata(isNotNull());
+
+        doReturn(10L).when(adminService).addBookToRepo(book1);
+        doReturn(20L).when(adminService).addBookToRepo(book1);
+
+        Set userSet = Collections.singleton(UserDTO.builder().userName("John Doe").id(5L).build());
+        doReturn(userSet).when(adminService).getOverDueUsers();
     }
 
     @Test
@@ -68,7 +81,7 @@ public class AdminControllerTest {
 
     @Test
     public void testGetAllMetaDataError() throws Exception {
-        given(service.getAllMetadata()).willThrow(new RuntimeException("No metadata found"));
+        given(adminService.getAllMetadata()).willThrow(new RuntimeException("No metadata found"));
 
         mvc.perform(get("/admin/metadata")
                 .contentType(MediaType.APPLICATION_JSON))
@@ -79,7 +92,7 @@ public class AdminControllerTest {
 
     @Test
     public void testPersistMetaDataError() throws Exception {
-        doThrow(new LibraryException("Failed persistence")).when(service).persistMetadata(isNotNull());
+        doThrow(new LibraryException("Failed persistence")).when(adminService).persistMetadata(isNotNull());
 
         mvc.perform(post("/admin/metadata", metaData)
                 .content(new ObjectMapper().writeValueAsString(metaData))
@@ -87,5 +100,31 @@ public class AdminControllerTest {
                 .andExpect(status().isInternalServerError())
                 .andExpect(jsonPath("$.message", is("Failed persistence")))
                 .andExpect(jsonPath("$.status", is("Internal Server Error")));
+    }
+
+    @Test
+    public void testPersistBook() throws Exception {
+        mvc.perform(post("/admin/book")
+                .content(new ObjectMapper().writeValueAsString(book1))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
+
+    @Test
+    public void testModifyBook() throws Exception {
+        mvc.perform(put("/admin/book")
+                .content(new ObjectMapper().writeValueAsString(Arrays.asList(book1, book2)))
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("{}"));
+    }
+
+    @Test
+    public void testGetOverdue() throws Exception {
+        mvc.perform(get("/admin/overdue")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"id\":5,\"userName\":\"John Doe\"}]"));
     }
 }

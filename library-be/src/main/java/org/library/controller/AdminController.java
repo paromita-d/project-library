@@ -9,7 +9,7 @@ import org.library.exception.LibraryException;
 import org.library.service.AdminService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,22 +50,21 @@ public class AdminController {
     @GetMapping("/overdue")
     @ApiOperation("fetches those users who are overdue")
     public List<UserDTO> getOverdue() {
-        //todo add logic
-        return Arrays.asList(UserDTO.builder().id(10L).userName("Apple").build(), UserDTO.builder().id(20L).userName("Windows").build());
+        return new ArrayList<>(adminService.getOverDueUsers());
     }
 
     @PostMapping("/book")
     @ApiOperation("add a new book to the library and return book id")
-    public StatusDTO persistBook(@RequestBody BookDTO bookDTO) {
-        //todo add logic
-        return StatusDTO.builder().message("persisted to bookId - 10").build();
+    public StatusDTO persistBook(@RequestBody BookDTO bookDTO) throws LibraryException {
+        Long id = adminService.addBookToRepo(bookDTO);
+        return StatusDTO.builder().message("persisted to bookId - " + id).build();
     }
 
     @PutMapping("/book")
     @ApiOperation("update the quantity of books in inventory. Setting to 0 means removing these books. Count can not be negative. Returns [] on success")
-    public StatusDTO updateBooksQty(@RequestBody List<BookDTO> booksDTO) {
-        //todo add logic
-        return StatusDTO.builder().message("updated book quantity").build();
+    public StatusDTO updateBooksQty(@RequestBody List<BookDTO> booksDTO) throws LibraryException {
+        Map<Long, Integer> idQtyMap = adminService.updateBooksQtyInRepo(booksDTO);
+        return StatusDTO.builder().message("updated book quantity - " + idQtyMap).build();
     }
 
 }
