@@ -4,11 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.library.controller.dto.BookDTO;
-import org.library.repository.BookRepository;
-import org.library.repository.dto.Book;
-import org.library.repository.dto.MetaData;
+import org.library.controller.dto.UserDTO;
+import org.library.repository.*;
+import org.library.repository.dto.*;
 import org.library.exception.LibraryException;
-import org.library.repository.MetaDataRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
@@ -33,6 +32,12 @@ public class AdminServiceTest {
     private MetaDataRepository metaDataRepository;
     @Autowired
     private BookRepository bookRepository;
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private UserTransactionRepository userTransactionRepository;
+    @Autowired
+    private BookTransactionRepository bookTransactionRepository;
 
     @Test
     public void testPersistCheckoutDuration() throws LibraryException {
@@ -158,5 +163,49 @@ public class AdminServiceTest {
 
         List<BookDTO> books = Arrays.asList(book1, book2);
         service.updateBooksQtyInRepo(books);
+    }
+
+    @Test
+    public void testGetOverdueUsers() {
+        assertTrue(service.getOverDueUsers().isEmpty());
+
+        Book book = Book.builder().
+                bookName("First Book of maths").
+                author("Carol B.").
+                description("Its her first published book").
+                quantity(10).
+                availability(7).
+                build();
+
+        User user = User.builder().
+                userName("Richard Green").
+                userType("Customer").
+                password("xyz$$").
+                build();
+
+        UserTransaction userTransaction = UserTransaction.builder().
+                id(10L).
+                tranDate(new Date()).
+                user(user).
+                checkOutQty(10).
+                dueDate(new Date()).
+                status("OPEN").
+                build();
+
+        BookTransaction bookTransaction = BookTransaction.builder().
+                id(20L).
+                userTransaction(userTransaction).
+                book(book).
+                returned(false).
+                overdue(true).
+                build();
+
+        bookRepository.save(book);
+        userRepository.save(user);
+        userTransactionRepository.save(userTransaction);
+        bookTransactionRepository.save(bookTransaction);
+
+        assertEquals(1, service.getOverDueUsers().size());
+        assertTrue(service.getOverDueUsers().contains(UserDTO.builder().userName(user.getUserName()).id(user.getId()).build()));
     }
 }

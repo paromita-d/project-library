@@ -9,7 +9,7 @@ import org.library.exception.LibraryException;
 import org.library.service.AdminService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,8 +50,7 @@ public class AdminController {
     @GetMapping("/overdue")
     @ApiOperation("fetches those users who are overdue")
     public List<UserDTO> getOverdue() {
-        //todo add logic
-        return Arrays.asList(UserDTO.builder().id(10L).userName("Apple").build(), UserDTO.builder().id(20L).userName("Windows").build());
+        return new ArrayList<>(adminService.getOverDueUsers());
     }
 
     @PostMapping("/book")

@@ -13,7 +13,9 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -79,4 +81,28 @@ public class BookTransactionRepositoryTest {
         assertEquals(expected, actual);
     }
 
+    @Test
+    public void testFindByOverdue() {
+        BookTransaction tran1 = BookTransaction.builder().
+                userTransaction(userTransaction).
+                book(book).
+                returned(false).
+                overdue(true).
+                build();
+
+        BookTransaction tran2 = BookTransaction.builder().
+                userTransaction(userTransaction).
+                book(book).
+                returned(false).
+                overdue(false).
+                build();
+
+        repository.saveAll(Arrays.asList(tran1, tran2));
+
+        List<BookTransaction> trans = repository.findByOverdue(true);
+        assertEquals(tran1, trans.get(0));
+
+        trans = repository.findByOverdue(false);
+        assertEquals(tran2, trans.get(0));
+    }
 }

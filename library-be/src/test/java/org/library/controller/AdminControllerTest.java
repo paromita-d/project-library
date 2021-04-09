@@ -5,6 +5,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.library.controller.dto.BookDTO;
+import org.library.controller.dto.UserDTO;
 import org.library.exception.LibraryException;
 import org.library.service.AdminService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +15,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Arrays;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.ArgumentMatchers.isNotNull;
@@ -55,6 +54,9 @@ public class AdminControllerTest {
 
         doReturn(10L).when(adminService).addBookToRepo(book1);
         doReturn(20L).when(adminService).addBookToRepo(book1);
+
+        Set userSet = Collections.singleton(UserDTO.builder().userName("John Doe").id(5L).build());
+        doReturn(userSet).when(adminService).getOverDueUsers();
     }
 
     @Test
@@ -116,5 +118,13 @@ public class AdminControllerTest {
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(content().json("{}"));
+    }
+
+    @Test
+    public void testGetOverdue() throws Exception {
+        mvc.perform(get("/admin/overdue")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(content().json("[{\"id\":5,\"userName\":\"John Doe\"}]"));
     }
 }

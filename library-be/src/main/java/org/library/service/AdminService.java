@@ -2,8 +2,11 @@ package org.library.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.library.controller.dto.BookDTO;
+import org.library.controller.dto.UserDTO;
 import org.library.repository.BookRepository;
+import org.library.repository.BookTransactionRepository;
 import org.library.repository.dto.Book;
+import org.library.repository.dto.BookTransaction;
 import org.library.repository.dto.MetaData;
 import org.library.exception.LibraryException;
 import org.library.repository.MetaDataRepository;
@@ -23,10 +26,15 @@ public class AdminService {
 
     private final MetaDataRepository metaDataRepository;
     private final BookRepository bookRepository;
+    private final BookTransactionRepository bookTransactionRepository;
+
     // The constructor is equivalent to @Autowired. As we mention the service from the controller class, we mention the repository from service class
-    public AdminService(MetaDataRepository metaDataRepository, BookRepository bookRepository) {
+    public AdminService(MetaDataRepository metaDataRepository,
+                        BookRepository bookRepository,
+                        BookTransactionRepository bookTransactionRepository) {
         this.metaDataRepository = metaDataRepository;
         this.bookRepository = bookRepository;
+        this.bookTransactionRepository = bookTransactionRepository;
     }
 
     // to handle the exception
@@ -96,5 +104,19 @@ public class AdminService {
         });
         bookRepository.saveAll(entities);  //persist back to DB
         return idQtyMap;
+    }
+
+    //get list of overdue users
+    public Set<UserDTO> getOverDueUsers() {
+        List<BookTransaction> overDueTrans = bookTransactionRepository.findByOverdue(true);
+
+        Set<UserDTO> overdueUsers = new HashSet<>();
+        overDueTrans.forEach(t -> overdueUsers.add(
+                UserDTO.builder().
+                        id(t.getUserTransaction().getUser().getId()).
+                        userName(t.getUserTransaction().getUser().getUserName()).
+                        build()));
+
+        return overdueUsers;
     }
 }
